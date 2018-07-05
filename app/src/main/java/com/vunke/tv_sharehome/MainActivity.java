@@ -58,16 +58,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.main_button:
-                initCall();
-                break;
-            default:
-                break;
+        if(view.getId() == R.id.main_button){
+            initCall();
         }
     }
-
-
     private void initBroadcast() {
         registerReceiver(LoginStatusChanged, new IntentFilter(
                 LoginSDK.LOGIN_STATUS_CHAGED));
