@@ -63,8 +63,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
         }
     }
     private void initBroadcast() {
-        registerReceiver(LoginStatusChanged, new IntentFilter(
-                LoginSDK.LOGIN_STATUS_CHAGED));
+        registerReceiver(LoginStatusChanged, new IntentFilter( LoginSDK.LOGIN_STATUS_CHAGED));
     }
 
     @Override

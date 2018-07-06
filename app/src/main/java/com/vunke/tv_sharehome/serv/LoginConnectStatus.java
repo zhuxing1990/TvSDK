@@ -107,8 +107,6 @@ public class LoginConnectStatus {
 					HuaweiSDKApplication.exitAppStartLoginActivity(context);
 				}
 			}, null);
-			
-			 
 			break;
 		case LoginApi.REASON_USER_CANCEL:// 用户取消了
 			reasonStr = "user canceled";

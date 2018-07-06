@@ -23,7 +23,6 @@ import com.huawei.rcs.tls.DefaultTlsHelper;
 import com.huawei.rcs.upgrade.UpgradeApi;
 import com.huawei.usp.UspCfg;
 import com.vunke.tv_sharehome.Config;
-import com.vunke.tv_sharehome.MainActivity;
 import com.vunke.tv_sharehome.call.CallIn_Activity;
 import com.vunke.tv_sharehome.greendao.dao.util.DbCore;
 import com.vunke.tv_sharehome.serv.LoginConnectStatus;
@@ -338,8 +337,8 @@ public class HuaweiSDKApplication extends RCSApplication {
 				activity.finish();
 			}
 			activities.clear();
-			context.startActivity(new Intent(context, MainActivity.class)
-					.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+//			context.startActivity(new Intent(context, MainActivity.class)
+//					.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
 
 		}
 
