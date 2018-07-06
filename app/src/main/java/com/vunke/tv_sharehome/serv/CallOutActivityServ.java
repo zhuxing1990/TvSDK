@@ -1,6 +1,5 @@
 package com.vunke.tv_sharehome.serv;
 
-import android.content.Context;
 import android.content.Intent;
 
 import com.huawei.rcs.call.CallApi;
@@ -10,11 +9,8 @@ import com.vunke.tv_sharehome.RxBus;
 import com.vunke.tv_sharehome.call.CallAudio_Activity;
 import com.vunke.tv_sharehome.call.CallOut_Activity;
 import com.vunke.tv_sharehome.call.CallVideo_Activity;
-import com.vunke.tv_sharehome.net.MissedCallNet;
 import com.vunke.tv_sharehome.utils.DBUtils;
 import com.vunke.tv_sharehome.utils.Logger;
-import com.vunke.tv_sharehome.utils.SPUtils;
-import com.vunke.tv_sharehome.utils.UiUtils;
 
 
 public class CallOutActivityServ {
@@ -96,65 +92,6 @@ public class CallOutActivityServ {
 			// 通知刷新通话记录
 			RxBus.getInstance().post(100);
 			context.finish();
-			Logger.d(tag, "是否发送未接电话提醒:", "alerting_count:" + alerting_count
-					+ ";dy_time:" + dy_time);
-			// 调用未接来电提醒接口 ,表示对方已登录但对方没有网络(对方无法接通)
-			/*
-			 * if (alerting_count == 1 && dy_time > 2000) { //sendSms(1);
-			 * Logger.d(tag, "only_status对方无法接通:", "only_status对方无法接通"); } //
-			 * 表示对方不在线或对方不是想家用户 else if (alerting_count == 1 && dy_time < 1000)
-			 * { // sendSms(2); Logger.d(tag, "only_status对方无法接通:",
-			 * "only_status对方不在线"); }
-			 */
-
-			/**
-			 * 1:被叫不在线 2:被叫在线但没有网络 3:被叫拒接但主叫不挂断 4:被叫正在通话中主叫不挂断
-			 */
-			if (status_code == 408) {
-				dy_status_time = System.currentTimeMillis() - current_time;
-
-				if (alerting_count == 1 && dy_time < 2000) {
-					// 对方正忙,主叫不挂断
-					if (dy_status_time > 90000) {
-						Logger.d(tag, "only_status对方无法接通:", " 对方正忙,主叫不挂断");
-						sendSms(Status.BUSY, context, username, calledType);
-					}
-					// 对方不在线,不挂断
-					else if (dy_status_time > 10000) {
-						sendSms(Status.OFFLINE, context, username, calledType);
-						Logger.d(tag, "only_status对方无法接通:", " 对方不在线,不挂断");
-					}
-
-				}
-				// 在线没网络,不挂断
-				else if (alerting_count == 1 && dy_time >= 2000) {
-					if (dy_status_time > 30000) {
-						sendSms(Status.NOT_NET, context, username, calledType);
-						Logger.d(tag, "only_status对方无法接通:", "在线没网络,不挂断");
-					}
-				}
-				// 被叫拒接,不挂断
-				else if (alerting_count == 3) {
-					Logger.d(tag, "only_status对方无法接通:", "被叫拒接,不挂断");
-				}
-			} else {
-				// 对方正忙或不在线,主叫挂断
-				if (alerting_count == 1 && dy_time < 2000) {
-					sendSms(Status.OFFLINE, context, username, calledType);
-					Logger.d(tag, "only_status对方无法接通:", " 对方正忙或不在线,主叫挂断");
-				}
-				// 在线没网络,挂断
-				else if (alerting_count == 1 && dy_time >= 2000) {
-					sendSms(Status.NOT_NET, context, username, calledType);
-					Logger.d(tag, "only_status对方无法接通:", "在线没网络,挂断");
-				}
-				// 被叫拒接,挂断
-				else if (alerting_count == 3) {
-					Logger.d(tag, "only_status对方无法接通:", "被叫拒接,挂断");
-				}
-			}
-			System.out.println("dy_status_time:" + dy_status_time);
-
 			break;
 
 		default:
@@ -171,51 +108,5 @@ public class CallOutActivityServ {
 
 	}
 
-	/**
-	 * 发送短信通话对方有电话没有接听
-	 * 
-	 * @param status
-	 *            没有接听的原因
-	 * @param context
-	 * @param username
-	 *            主叫号码
-	 * @param calledType
-	 *            被叫类型
-	 */
-	private void sendSms(final Status status, Context context, String username,
-			String calledType) {
 
-		new MissedCallNet(SPUtils.getInstance(context).getUserName(), username,
-				current_time + "", "8", calledType,
-				new MissedCallNet.MissedCallNetCallback() {
-
-					@Override
-					public void onSuccess(String code, String messge) {
-						
-						String reson = null;
-						switch (status) {
-						case OFFLINE:
-							reson = "对方不在线";
-							break;
-						case NOT_NET:
-							reson = "对方网络不通";
-							break;
-						case BUSY:
-							reson = "对方正在通话中";
-							break;
-						case REJECT:
-							reson = "对方拒接了您的电话";
-							break;
-						default:
-							break;
-						}
-						UiUtils.showToast(reson+",已经使用短信方式通知对方");
-					}
-
-					@Override
-					public void onFail(String code, String messge) {
-						
-					}
-				});
-	}
 }
